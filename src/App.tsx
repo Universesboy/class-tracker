@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Layout from './components/common/Layout';
 import Login from './pages/Login';
@@ -8,8 +8,9 @@ import Dashboard from './pages/Dashboard';
 import Students from './pages/Students';
 import AddStudent from './pages/AddStudent';
 import EditStudent from './pages/EditStudent';
-import RecordPurchase from './pages/RecordPurchase';
 import Attendance from './pages/Attendance';
+import RecordPurchase from './pages/RecordPurchase';
+import NotFound from './pages/NotFound';
 import { UserRole } from './types';
 
 // Protected route wrapper
@@ -17,35 +18,26 @@ const ProtectedRoute = ({
   children, 
   requiredRole 
 }: { 
-  children: React.ReactElement, 
-  requiredRole?: UserRole 
+  children: React.ReactNode; 
+  requiredRole?: UserRole;
 }) => {
-  const { currentUser } = useAuth();
-
-  if (!currentUser) {
-    return <Navigate to="/login" replace />;
-  }
-
-  if (requiredRole && currentUser.role !== requiredRole) {
-    return <Navigate to="/" replace />;
-  }
-
-  return children;
-};
-
-// Get the base URL from package.json homepage or use /
-const getBasename = (): string => {
-  const { homepage } = require('../package.json');
-  if (!homepage) return '/';
+  const { currentUser, userRole } = useAuth();
   
-  // Extract pathname from homepage
-  return new URL(homepage).pathname;
+  if (!currentUser) {
+    return <Navigate to="/login" />;
+  }
+  
+  if (requiredRole && userRole !== requiredRole) {
+    return <Navigate to="/" />;
+  }
+  
+  return <Layout>{children}</Layout>;
 };
 
 function App() {
   return (
-    <Router basename={getBasename()}>
-      <AuthProvider>
+    <AuthProvider>
+      <Router>
         <Routes>
           {/* Public routes */}
           <Route path="/login" element={<Login />} />
@@ -56,9 +48,7 @@ function App() {
             path="/" 
             element={
               <ProtectedRoute>
-                <Layout>
-                  <Dashboard />
-                </Layout>
+                <Dashboard />
               </ProtectedRoute>
             } 
           />
@@ -66,63 +56,53 @@ function App() {
           <Route 
             path="/students" 
             element={
-              <ProtectedRoute requiredRole={UserRole.Admin}>
-                <Layout>
-                  <Students />
-                </Layout>
+              <ProtectedRoute>
+                <Students />
               </ProtectedRoute>
-            }
+            } 
           />
           
           <Route 
             path="/students/add" 
             element={
               <ProtectedRoute requiredRole={UserRole.Admin}>
-                <Layout>
-                  <AddStudent />
-                </Layout>
+                <AddStudent />
               </ProtectedRoute>
-            }
+            } 
           />
           
           <Route 
-            path="/students/edit/:id" 
+            path="/students/:id" 
             element={
-              <ProtectedRoute requiredRole={UserRole.Admin}>
-                <Layout>
-                  <EditStudent />
-                </Layout>
+              <ProtectedRoute>
+                <EditStudent />
               </ProtectedRoute>
-            }
-          />
-          
-          <Route 
-            path="/purchases/add" 
-            element={
-              <ProtectedRoute requiredRole={UserRole.Admin}>
-                <Layout>
-                  <RecordPurchase />
-                </Layout>
-              </ProtectedRoute>
-            }
+            } 
           />
           
           <Route 
             path="/attendance" 
             element={
               <ProtectedRoute>
-                <Layout>
-                  <Attendance />
-                </Layout>
+                <Attendance />
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/record-purchase" 
+            element={
+              <ProtectedRoute requiredRole={UserRole.Admin}>
+                <RecordPurchase />
               </ProtectedRoute>
             } 
           />
           
           {/* Fallback route */}
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
-      </AuthProvider>
-    </Router>
+      </Router>
+    </AuthProvider>
   );
 }
 
