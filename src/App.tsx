@@ -10,6 +10,7 @@ import AddStudent from './pages/AddStudent';
 import EditStudent from './pages/EditStudent';
 import Attendance from './pages/Attendance';
 import RecordPurchase from './pages/RecordPurchase';
+import StudentAttendanceHistory from './pages/StudentAttendanceHistory';
 import NotFound from './pages/NotFound';
 import { UserRole } from './types';
 
@@ -76,6 +77,15 @@ function App() {
             element={
               <ProtectedRoute>
                 <EditStudent />
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/students/:id/attendance" 
+            element={
+              <ProtectedRoute>
+                <StudentAttendanceHistory />
               </ProtectedRoute>
             } 
           />

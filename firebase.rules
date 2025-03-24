@@ -1,0 +1,30 @@
+// Firestore security rules
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Allow authenticated users to read/write their own data
+    match /users/{userId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null && request.auth.uid == userId;
+      allow update, delete: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Allow authenticated users to read all students
+    match /students/{studentId} {
+      allow read: if request.auth != null;
+      allow create, update, delete: if request.auth != null;
+    }
+    
+    // Allow authenticated users to manage purchases
+    match /purchases/{purchaseId} {
+      allow read: if request.auth != null;
+      allow create, update, delete: if request.auth != null;
+    }
+    
+    // Allow authenticated users to manage attendance
+    match /attendances/{attendanceId} {
+      allow read: if request.auth != null;
+      allow create, update, delete: if request.auth != null;
+    }
+  }
+} 
