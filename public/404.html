@@ -4,20 +4,12 @@
   <meta charset="utf-8">
   <title>Badminton Class Tracker</title>
   <script type="text/javascript">
-    // Single page apps for GitHub Pages
+    // Single Page Apps for GitHub Pages
     // MIT License
     // https://github.com/rafgraph/spa-github-pages
-    // This script takes the current URL and converts the path and query
-    // string into a single page app route, then redirects to the index page
-    
-    var pathSegmentsToKeep = 1; // Keep the repo name part of the path
+    var pathSegmentsToKeep = 1;
 
     var l = window.location;
-    var repo = /([^\/]+)\.github\.io\/([^\/]+)/.exec(l.hostname + l.pathname);
-    if (repo) {
-      pathSegmentsToKeep = 2; // If it's a user page, keep the repo segment as well
-    }
-
     l.replace(
       l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
       l.pathname.split('/').slice(0, 1 + pathSegmentsToKeep).join('/') + '/?/' +
